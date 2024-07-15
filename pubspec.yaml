@@ -45,6 +45,7 @@ dependencies:
   googleapis: ^13.1.0
   googleapis_auth: ^1.6.0
   shared_preferences: ^2.0.6
+  flutter_chat_bubble: ^2.0.2
 
 dev_dependencies:
   flutter_test:
