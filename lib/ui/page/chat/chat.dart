@@ -29,8 +29,7 @@ class ChatPage extends StatelessWidget {
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Selector<ChatController, List<Chat>>(
-                  selector: (context, controller) =>
-                      controller.chatList.reversed.toList(),
+                  selector: (context, controller) => controller.chatList.reversed.toList(),
                   builder: (context, chatList, child) {
                     return ListView.separated(
                       shrinkWrap: true,
@@ -40,8 +39,7 @@ class ChatPage extends StatelessWidget {
                       separatorBuilder: (_, __) => const SizedBox(
                         height: 12,
                       ),
-                      controller:
-                      context.read<ChatController>().scrollController,
+                      controller: context.read<ChatController>().scrollController,
                       itemCount: chatList.length,
                       itemBuilder: (context, index) {
                         return Bubble(chat: chatList[index]);

@@ -24,51 +24,35 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  bool isLoggedIn = false;
+  bool isLoggedIn = true;
   String nickname = '';
 
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus();
+    _fetchUserDetailsById(1); // ID 1의 사용자 정보 가져오기
   }
 
-  Future<void> _checkLoginStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? accessToken = prefs.getString('accessToken');
-    if (accessToken != null && accessToken.isNotEmpty && accessToken != 'guest') {
-      setState(() {
-        isLoggedIn = true;
-      });
-      await _fetchUserDetails(accessToken);
-    } else {
-      setState(() {
-        isLoggedIn = true; // false로 수정 필요
-      });
-    }
-  }
-
-  Future<void> _fetchUserDetails(String accessToken) async {
+  Future<void> _fetchUserDetailsById(int id) async {
     try {
-      var url = Uri.parse('${Config.baseUrl}/api/v1/users/myPage');
-      var response = await http.get(url, headers: {
-        'Authorization': 'Bearer $accessToken',
-      });
+      var url = Uri.parse('${Config.baseUrl}/api/users/$id');
+      var response = await http.get(url);
 
+      print('Request URL: $url');
       print('Response Status Code: ${response.statusCode}');
       print('Response Body: ${utf8.decode(response.bodyBytes)}');
 
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+        print('User Details: $jsonResponse');
         setState(() {
-          nickname = jsonResponse['data']['email'];
+          nickname = jsonResponse['name'];
         });
-        print('User email: $nickname');
       } else {
-        print('Failed to load user email');
+        print('Failed to load user details for ID $id');
       }
     } catch (e) {
-      print('Error fetching user email: $e');
+      print('Error fetching user details for ID $id: $e');
     }
   }
 
@@ -91,6 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
       onConfirm: () {
         _logout();
         if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
         }
       },
     );
@@ -121,52 +106,31 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 Text(
-                  isLoggedIn ? '환영합니다!' : '로그인이 필요합니다',
+                  '환영합니다!',
                   style: AppTextStyles.headingH3.copyWith(color: AppColors.neutralDarkDarkest),
                 ),
-                if (isLoggedIn)
-                  Text(
-                    nickname,
-                    style: AppTextStyles.bodyS.copyWith(color: AppColors.neutralDarkDarkest),
-                  ),
-                if (!isLoggedIn)
-                  Text('@loginNeeded', style: AppTextStyles.bodyS.copyWith(color: AppColors.neutralDarkLight)),
+                Text(
+                  nickname,
+                  style: AppTextStyles.bodyS.copyWith(color: AppColors.neutralDarkDarkest),
+                ),
               ],
             ),
           ),
-          if (isLoggedIn) ...[
-            _buildTile(context, '생년월일', SurveyBirthPage_()),
-            _buildTile(context, '긴급 연락처', SurveyPhonePage_()),
-            _buildTile(context, '학습 수준', SurveySmartPage_()),
-            _buildTile(context, '관심사', SurveyLikePage_()),
-            _buildTile(context, '기타 특이사항', SurveyMemoPage_()),
-            ListTile(
-              title: Text('로그아웃', style: AppTextStyles.bodyM.copyWith(color: AppColors.neutralDarkDarkest)),
-              trailing: SvgPicture.asset(
-                'assets/icons/arrow_right.svg',
-                width: 12,
-                height: 12,
-                color: AppColors.neutralDarkLightest,
-              ),
-              onTap: () => _showLogoutDialog(context),
+          _buildTile(context, '생년월일', SurveyBirthPage_()),
+          _buildTile(context, '긴급 연락처', SurveyPhonePage_()),
+          _buildTile(context, '학습 수준', SurveySmartPage_()),
+          _buildTile(context, '관심사', SurveyLikePage_()),
+          _buildTile(context, '기타 특이사항', SurveyMemoPage_()),
+          ListTile(
+            title: Text('로그아웃', style: AppTextStyles.bodyM.copyWith(color: AppColors.neutralDarkDarkest)),
+            trailing: SvgPicture.asset(
+              'assets/icons/arrow_right.svg',
+              width: 12,
+              height: 12,
+              color: AppColors.neutralDarkLightest,
             ),
-          ] else ...[
-            ListTile(
-              title: Text('로그인', style: AppTextStyles.bodyM.copyWith(color: AppColors.neutralDarkDarkest)),
-              trailing: SvgPicture.asset(
-                'assets/icons/arrow_right.svg',
-                width: 12,
-                height: 12,
-                color: AppColors.neutralDarkLightest,
-              ),
-              onTap: () async {
-                final result = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage()));
-                if (result == true) {
-                  _checkLoginStatus();
-                }
-              },
-            ),
-          ],
+            onTap: () => _showLogoutDialog(context),
+          ),
         ],
       ),
     );
@@ -176,11 +140,10 @@ class _ProfilePageState extends State<ProfilePage> {
     return ListTile(
       title: Text(title, style: AppTextStyles.bodyM.copyWith(color: AppColors.neutralDarkDarkest)),
       trailing: SvgPicture.asset(
-        'assets/icons/arrow_right.svg',
-        width: 12,
-        height: 12,
-        color: AppColors.neutralDarkLightest,
-      ),
+          'assets/icons/arrow_right.svg',
+          width: 12,
+          height: 12,
+          color: AppColors.neutralDarkLightest),
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => destinationPage));
       },

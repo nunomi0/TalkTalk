@@ -29,9 +29,9 @@ class _MissionPageState extends State<MissionPage> {
   bool _isLoading = true;
   int userId = 0;
 
-  int currentStep1 = 2;
+  int currentStep1 = 0;
   int currentStep2 = 0;
-  int currentStep3 = 1;
+  int currentStep3 = 0;
 
   final String missionDescription1 = "커피포트의 전원 플러그를 끈 후 물을 1/3 정도 넣고 버튼을 눌러 끓이세요.";
   final String missionDescription2 = "친구들에게 친절히 대하고 대화를 나누어 보세요.";
@@ -116,23 +116,32 @@ class _MissionPageState extends State<MissionPage> {
   }
 
   void _completeMissionStep(int missionId, String title, List<String> descriptions, int currentStep) {
-    int stepsRemaining = 3 - currentStep;
-
-    for (int i = 0; i < stepsRemaining; i++) {
+    if (currentStep < 3) {
       _showMissionCard(
         title,
         descriptions[currentStep],
-        currentStep+i+1,
+        currentStep + 1,
         3,
         missionId,
             () {
           setState(() {
-            if (currentStep + i + 1 < 3) {
-              currentStep++;
+            if (currentStep + 1 < 3) {
+              switch (missionId) {
+                case 1:
+                  currentStep1++;
+                  break;
+                case 2:
+                  currentStep2++;
+                  break;
+                case 3:
+                  currentStep3++;
+                  break;
+              }
+              _completeMissionStep(missionId, title, descriptions, currentStep + 1); // Move to the next step
             } else {
               _showCongratulatoryPopup();
             }
-            Navigator.of(context).pop(); // 팝업 닫기
+            Navigator.of(context).pop(); // Close the popup
           });
         },
       );
