@@ -5,6 +5,7 @@ import 'package:talktalk/widgets/card.dart';
 import 'package:talktalk/ui/page/chat/chat.dart';
 import 'package:talktalk/ui/page/mission/sort_dropdown.dart';
 import 'package:talktalk/widgets/list_item.dart';
+import 'package:talktalk/widgets/mission_card.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:talktalk/resource/config.dart';
@@ -20,21 +21,25 @@ class MissionPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CommunityPageState createState() => _CommunityPageState();
+  _MissionPageState createState() => _MissionPageState();
 }
 
-class _CommunityPageState extends State<MissionPage> {
-  late String _sortingCriteria;
-  List<String> _sortingOptions = ['최신순'];
-
-  List<dynamic> _recipes = [];
+class _MissionPageState extends State<MissionPage> {
+  List<dynamic> _missions = [];
   bool _isLoading = true;
   int userId = 0;
+
+  int currentStep1 = 2;
+  int currentStep2 = 0;
+  int currentStep3 = 1;
+
+  final String missionDescription1 = "커피포트의 전원 플러그를 끈 후 물을 1/3 정도 넣고 버튼을 눌러 끓이세요.";
+  final String missionDescription2 = "친구들에게 친절히 대하고 대화를 나누어 보세요.";
+  final String missionDescription3 = "국어 숙제를 완성하세요.";
 
   @override
   void initState() {
     super.initState();
-    _sortingCriteria = '최신순';
     fetchUserDetails();
   }
 
@@ -56,7 +61,6 @@ class _CommunityPageState extends State<MissionPage> {
           setState(() {
             userId = jsonResponse['data']['userId'];
           });
-          fetchRecipes(accessToken);
         } else {
           setState(() {
             _isLoading = false;
@@ -75,64 +79,64 @@ class _CommunityPageState extends State<MissionPage> {
     }
   }
 
-  Future<void> fetchRecipes(String accessToken) async {
-    String endpoint = '${Config.baseUrl}/api/v1/recipes/all';
-
-    try {
-      final response = await http.get(
-        Uri.parse(endpoint),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken',
-        },
-      );
-
-      String responseBody = utf8.decode(response.bodyBytes);
-      print(responseBody);
-
-      if (response.statusCode == 200) {
-        var jsonResponse = json.decode(responseBody);
-        List<dynamic> recipes = jsonResponse['data'];
-
-        if (_sortingCriteria == '최신순') {
-          recipes.sort((a, b) {
-            DateTime dateA = DateTime(a['createdAt'][0], a['createdAt'][1], a['createdAt'][2], a['createdAt'][3], a['createdAt'][4], a['createdAt'][5], a['createdAt'][6]);
-            DateTime dateB = DateTime(b['createdAt'][0], b['createdAt'][1], b['createdAt'][2], b['createdAt'][3], b['createdAt'][4], b['createdAt'][5], b['createdAt'][6]);
-            return dateB.compareTo(dateA);
-          });
-        } else if (_sortingCriteria == '좋아요순') {
-          recipes.sort((a, b) => b['likes'].compareTo(a['likes']));
-        }
-
-        setState(() {
-          _recipes = recipes;
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
-        print('Failed to load recipes: ${response.statusCode}');
-      }
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      print('Error fetching recipes: $e');
-    }
-  }
-
-  void _showDialog(String title, String content) {
-    CustomAlertDialog.showCustomDialog(
+  void _showMissionCard(String title, String description, int currentStep, int totalSteps, int missionId, VoidCallback onComplete) {
+    showDialog(
       context: context,
-      title: title,
-      content: content,
-      cancelButtonText: '취소',
-      confirmButtonText: '확인',
-      onConfirm: () {
-        print('Confirmed!');
+      builder: (BuildContext context) {
+        return MissionCard(
+          missionTitle: title,
+          missionDescription: description,
+          currentStep: currentStep,
+          totalSteps: totalSteps,
+          missionId: missionId,
+          onComplete: onComplete,
+        );
       },
     );
+  }
+
+  void _showCongratulatoryPopup() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('축하합니다!'),
+          content: Text('모든 단계를 완료했습니다.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // 팝업 닫기
+              },
+              child: Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _completeMissionStep(int missionId, String title, List<String> descriptions, int currentStep) {
+    int stepsRemaining = 3 - currentStep;
+
+    for (int i = 0; i < stepsRemaining; i++) {
+      _showMissionCard(
+        title,
+        descriptions[currentStep],
+        currentStep+i+1,
+        3,
+        missionId,
+            () {
+          setState(() {
+            if (currentStep + i + 1 < 3) {
+              currentStep++;
+            } else {
+              _showCongratulatoryPopup();
+            }
+            Navigator.of(context).pop(); // 팝업 닫기
+          });
+        },
+      );
+    }
   }
 
   @override
@@ -153,44 +157,35 @@ class _CommunityPageState extends State<MissionPage> {
           children: [
             ContentSwitcher(),
             SizedBox(height: 20),
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SortingDropdown(
-                    value: _sortingCriteria,
-                    options: _sortingOptions,
-                    onChanged: (newValue) {
-                      setState(() {
-                        _sortingCriteria = newValue!;
-                        _isLoading = true;
-                        SharedPreferences.getInstance().then((prefs) {
-                          String? accessToken = prefs.getString('accessToken');
-                          if (accessToken != null && accessToken.isNotEmpty) {
-                            fetchRecipes(accessToken);
-                          }
-                        });
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
             ListItem(
               title: '컵라면 끓이기',
-              subtitle: '1/3 완료',
-              onTap: () => _showDialog('컵라면 끓이기', '컵라면 끓이기를 선택하셨습니다.'),
+              subtitle: '$currentStep1/3 완료',
+              onTap: () => _completeMissionStep(
+                1,
+                '컵라면 끓이기',
+                [missionDescription1, missionDescription1, missionDescription1],
+                currentStep1,
+              ),
             ),
             ListItem(
               title: '친구들과 친하게 지내기',
-              subtitle: '0/3 완료',
-              onTap: () => _showDialog('친구들과 친하게 지내기', '친구들과 친하게 지내기를 선택하셨습니다.'),
+              subtitle: '$currentStep2/3 완료',
+              onTap: () => _completeMissionStep(
+                2,
+                '친구들과 친하게 지내기',
+                [missionDescription2, missionDescription2, missionDescription2],
+                currentStep2,
+              ),
             ),
             ListItem(
               title: '국어 숙제하기',
-              subtitle: '0/3 완료',
-              onTap: () => _showDialog('국어 숙제하기', '국어 숙제하기를 선택하셨습니다.'),
+              subtitle: '$currentStep3/3 완료',
+              onTap: () => _completeMissionStep(
+                3,
+                '국어 숙제하기',
+                [missionDescription3, missionDescription3, missionDescription3],
+                currentStep3,
+              ),
             ),
           ],
         ),

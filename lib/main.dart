@@ -9,14 +9,14 @@ import 'package:talktalk/ui/theme/text_styles.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:talktalk/ui/page/chat/chat_controller.dart';
+import 'package:talktalk/ui/page/login/login.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await dotenv.load(fileName: 'assets/config/.env');
-    print("환경 변수가 로드되었습니다");
-    print("Loaded API Key: ${dotenv.env['OPENAI_API_KEY']}");
-    print("Loaded API Key: ${dotenv.env['BASE_URL']}");
+    print("톡톡이 애플리케이션이 실행되었습니다.");
     runApp(MyApp());
   } catch (e) {
     print("Failed to load .env file: $e");
@@ -37,12 +37,12 @@ class MyApp extends StatelessWidget {
           primaryColor: AppColors.highlightDarkest,
           splashColor: Colors.transparent,
         ),
-        initialRoute: '/',
+        initialRoute: '/login',
         routes: {
           '/': (context) => MyHomePage(),
           '/login': (context) => LoginPage(),
           '/profile': (context) => ProfilePage(),
-          '/home': (context) => HomeScreen(),
+          '/home': (context) => MyHomePage(),
         },
       ),
     );
@@ -78,7 +78,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _getWidgetOptions().elementAt(_selectedIndex),
-
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
