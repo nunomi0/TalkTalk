@@ -10,7 +10,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _handleSignIn() async {
     try {
       // 로그인 버튼 클릭 시 홈 화면으로 이동
-      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      Navigator.pushReplacementNamed(context, '/survey_name');
     } catch (error) {
       print('Error initiating Google Sign-In: $error');
     }
@@ -54,7 +54,10 @@ class _LoginPageState extends State<LoginPage> {
                 icon: Image.asset('assets/images/google.png', height: 24), // Add Google icon
                 label: Text(
                   'Google 로그인',
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                  ),
                 ),
                 onPressed: _handleSignIn,
               ),

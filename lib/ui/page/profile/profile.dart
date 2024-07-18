@@ -7,18 +7,23 @@ import 'package:talktalk/widgets/dialog.dart';
 import 'package:talktalk/widgets/button/primary_button.dart';
 import 'package:talktalk/widgets/button/secondary_button.dart';
 import 'package:talktalk/ui/page/login/login.dart';
-import 'package:talktalk/ui/page/mission/mission.dart';
+import 'package:talktalk/ui/page/profile/survey_name.dart';
+import 'package:talktalk/ui/page/profile/survey_birth.dart';
+import 'package:talktalk/ui/page/profile/survey_phone.dart';
+import 'package:talktalk/ui/page/profile/survey_smart.dart';
+import 'package:talktalk/ui/page/profile/survey_like.dart';
+import 'package:talktalk/ui/page/profile/survey_memo.dart';
+import 'package:talktalk/ui/page/profile/survey_complete.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:talktalk/resource/config.dart';
 
-
 class ProfilePage extends StatefulWidget {
   @override
-  _MyPageState createState() => _MyPageState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _MyPageState extends State<ProfilePage> {
+class _ProfilePageState extends State<ProfilePage> {
   bool isLoggedIn = false;
   String nickname = '';
 
@@ -66,7 +71,6 @@ class _MyPageState extends State<ProfilePage> {
       print('Error fetching user email: $e');
     }
   }
-
 
   void _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -131,13 +135,11 @@ class _MyPageState extends State<ProfilePage> {
             ),
           ),
           if (isLoggedIn) ...[
-            _buildTile(context, '획득한 배지', MissionPage()),
-            _buildTile(context, '긴급 연락처', MissionPage()),
-            _buildTile(context, '생년월일', MissionPage()),
-            _buildTile(context, '학습 수준', MissionPage()),
-            _buildTile(context, '관심사', MissionPage()),
-            _buildTile(context, '기타 추가 사항', MissionPage()),
-            
+            _buildTile(context, '생년월일', SurveyBirthPage_()),
+            _buildTile(context, '긴급 연락처', SurveyPhonePage_()),
+            _buildTile(context, '학습 수준', SurveySmartPage_()),
+            _buildTile(context, '관심사', SurveyLikePage_()),
+            _buildTile(context, '기타 특이사항', SurveyMemoPage_()),
             ListTile(
               title: Text('로그아웃', style: AppTextStyles.bodyM.copyWith(color: AppColors.neutralDarkDarkest)),
               trailing: SvgPicture.asset(

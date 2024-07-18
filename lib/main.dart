@@ -10,6 +10,15 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:talktalk/ui/page/chat/chat_controller.dart';
 import 'package:talktalk/ui/page/login/login.dart';
+import 'package:talktalk/ui/page/login/survey_name.dart';
+import 'package:talktalk/ui/page/login/survey_name.dart';
+import 'package:talktalk/ui/page/login/survey_birth.dart';
+import 'package:talktalk/ui/page/login/survey_phone.dart';
+import 'package:talktalk/ui/page/login/survey_smart.dart';
+import 'package:talktalk/ui/page/login/survey_like.dart';
+import 'package:talktalk/ui/page/login/survey_memo.dart';
+import 'package:talktalk/ui/page/login/survey_complete.dart';
+
 
 
 void main() async {
@@ -43,6 +52,13 @@ class MyApp extends StatelessWidget {
           '/login': (context) => LoginPage(),
           '/profile': (context) => ProfilePage(),
           '/home': (context) => MyHomePage(),
+          '/survey_name': (context) => SurveyNamePage(),
+          '/survey_birth': (context) => SurveyBirthPage(),
+          '/survey_phone': (context) => SurveyPhonePage(),
+          '/survey_smart': (context) => SurveySmartPage(),
+          '/survey_like': (context) => SurveyLikePage(),
+          '/survey_memo': (context) => SurveyMemoPage(),
+          '/survey_complete': (context) => SurveyCompletePage(),
         },
       ),
     );

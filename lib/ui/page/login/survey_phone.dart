@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:talktalk/ui/theme/color.dart';
 import 'package:talktalk/widgets/button/primary_button.dart';
 
-class SurveyPage extends StatefulWidget {
+class SurveyPhonePage extends StatefulWidget {
   @override
-  _SurveyPageState createState() => _SurveyPageState();
+  _SurveyPhonePageState createState() => _SurveyPhonePageState();
 }
 
-class _SurveyPageState extends State<SurveyPage> {
-  final TextEditingController _nameController = TextEditingController();
+class _SurveyPhonePageState extends State<SurveyPhonePage> {
+  final TextEditingController _phoneController = TextEditingController();
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -25,8 +25,10 @@ class _SurveyPageState extends State<SurveyPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            LinearProgressIndicator(value: 3/6, color: Color(0xFF006FFD)),
+            SizedBox(height: 32),
             Text(
-              '환영합니다!',
+              '간단한 질문을 몇 가지 해볼게요.',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -35,7 +37,7 @@ class _SurveyPageState extends State<SurveyPage> {
             ),
             SizedBox(height: 8),
             Text(
-              '이름을 알려주세요.',
+              '부모님 연락처나 긴급 연락처를 알려주세요.',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey,
@@ -44,20 +46,19 @@ class _SurveyPageState extends State<SurveyPage> {
             ),
             SizedBox(height: 16),
             TextField(
-              controller: _nameController,
+              controller: _phoneController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                labelText: '이유경',
+                labelText: '전화번호를 입력하세요',
               ),
             ),
             SizedBox(height: 16),
             PrimaryButton(
               text: '다음',
               onPressed: () {
-                // 다음 버튼 클릭 시 처리할 로직을 여기에 작성하세요
-                print('다음 버튼 클릭');
+                Navigator.pushNamed(context, '/survey_smart');
               },
             ),
           ],
