@@ -246,6 +246,13 @@ class _HomeScreenState extends State<HomeScreen> {
           if (index == 0 || index == 6) {
             return SizedBox(width: 8);
           }
+          List<String> titles = [
+            '어떻게 친구를 사귈 수 있나요?',
+            '학교 숙제를 어떻게 해야 하나요?',
+            '무서운 꿈을 꾸면 어떻게 해야 하나요?',
+            '친구와 싸웠을 때 어떻게 해야 하나요?',
+            '어떻게 하면 집중을 잘 할 수 있나요?'
+          ];
           return GestureDetector(
             onTap: () {
               Navigator.push(
@@ -259,9 +266,8 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 189,
               height: 189,
               child: CustomCard(
-                title: '임시타이틀',
-                subtitle: '부제목',
-                imageUrl: 'assets/images/img.png',
+                title: titles[index - 1],
+                imageUrl: 'assets/images/homemm.png',
               ),
             ),
           );
@@ -298,7 +304,6 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 189,
               child: CustomCard(
                 title: recipe['name'] ?? '제목 없음',
-                subtitle: recipe['content'] ?? '설명 없음',
                 imageUrl: recipe['imageURL'] ?? 'assets/images/img.png',
               ),
             ),
@@ -320,14 +325,20 @@ class _HomeScreenState extends State<HomeScreen> {
           if (index == 0 || index == 6) {
             return SizedBox(width: 4);
           }
+          List<String> titles = [
+            '어떻게 친구를 사귈 수 있나요?',
+            '학교 숙제를 어떻게 해야 하나요?',
+            '무서운 꿈을 꾸면 어떻게 해야 하나요?',
+            '친구와 싸웠을 때 어떻게 해야 하나요?',
+            '어떻게 하면 집중을 잘 할 수 있나요?'
+          ];
           return GestureDetector(
             child: SizedBox(
               width: 189,
               height: 189,
               child: CustomCard(
-                title: '임시 질문',
-                subtitle: '질문하러가기',
-                imageUrl: 'assets/images/img.png',
+                title: titles[index - 1],
+                imageUrl: 'assets/images/homeq.png',
               ),
             ),
           );
@@ -355,9 +366,8 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 189,
               height: 189,
               child: CustomCard(
-                title: '소비기한 : ${item['expiryDate']}',
-                subtitle: '${item['title']} ${item['quantity']}',
-                imageUrl: item['imageUrl'] ?? 'assets/images/mushroom.jpg',
+                title: 'dd : ${item['dd']}',
+                imageUrl: item['imageUrl'] ?? 'assets/images/dd.jpg',
               ),
             ),
           );

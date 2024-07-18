@@ -38,40 +38,46 @@ class MissionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double progress = currentStep / totalSteps;
+    double width = MediaQuery.of(context).size.width * 0.8;
+    double height = MediaQuery.of(context).size.height * 0.6;
 
-    return AlertDialog(
+    return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      contentPadding: EdgeInsets.all(20),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          LinearProgressIndicator(
-            value: progress,
-            backgroundColor: Colors.grey.shade300,
-            color: AppColors.highlightDark,
-          ),
-          SizedBox(height: 20),
-          Text(
-            '$missionTitle $currentStep/$totalSteps',
-            style: AppTextStyles.headingH4.copyWith(color: AppColors.neutralDarkDarkest),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 10),
-          Text(
-            missionDescription,
-            style: AppTextStyles.bodyM.copyWith(color: AppColors.neutralDarkDark),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 20),
-          PrimaryButton(
-            text: '완료했어요',
-            onPressed: () {
-              completeMissionStep();
-              Navigator.of(context).pop(); // 팝업 닫기
-            },
-          ),
-        ],
+      child: Container(
+        width: width,
+        height: height,
+        padding: EdgeInsets.all(8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.grey.shade300,
+              color: AppColors.highlightDark,
+            ),
+            SizedBox(height: 60),
+            Text(
+              '$missionTitle $currentStep/$totalSteps',
+              style: AppTextStyles.headingH4.copyWith(color: AppColors.neutralDarkDarkest),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 40),
+            Text(
+              missionDescription,
+              style: AppTextStyles.bodyM.copyWith(color: AppColors.neutralDarkDark),
+              textAlign: TextAlign.center,
+            ),
+            Spacer(),
+            PrimaryButton(
+              text: '완료했어요',
+              onPressed: () {
+                completeMissionStep();
+                Navigator.of(context).pop(); // 팝업 닫기
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

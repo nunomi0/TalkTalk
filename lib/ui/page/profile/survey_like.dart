@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:talktalk/ui/theme/color.dart';
 import 'package:talktalk/widgets/button/primary_button.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SurveyLikePage_ extends StatefulWidget {
   @override
@@ -9,6 +11,39 @@ class SurveyLikePage_ extends StatefulWidget {
 
 class _SurveyLikePageState extends State<SurveyLikePage_> {
   final TextEditingController _likeController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final url = Uri.parse('http://localhost:8080/api/users/1');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        _likeController.text = data['interests'] ?? '';
+      });
+    } else {
+      print('Failed to load user data.');
+    }
+  }
+
+  Future<void> _updateInterests() async {
+    final url = Uri.parse(
+      'http://localhost:8080/api/users/1?fieldName=interests&fieldValue=${_likeController.text}',
+    );
+    final response = await http.patch(url);
+
+    if (response.statusCode == 200) {
+      print('Interests updated successfully.');
+    } else {
+      print('Failed to update interests.');
+    }
+  }
 
   @override
   void dispose() {
@@ -64,7 +99,9 @@ class _SurveyLikePageState extends State<SurveyLikePage_> {
             PrimaryButton(
               text: '수정',
               onPressed: () {
-                Navigator.pop(context);              },
+                _updateInterests();
+                Navigator.pop(context);
+              },
             ),
           ],
         ),

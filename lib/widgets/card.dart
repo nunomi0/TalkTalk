@@ -4,13 +4,11 @@ import 'package:talktalk/ui/theme/text_styles.dart';
 
 class CustomCard extends StatelessWidget {
   final String title;
-  final String subtitle;
   final String imageUrl;
 
   const CustomCard({
     Key? key,
     required this.title,
-    required this.subtitle,
     required this.imageUrl,
   }) : super(key: key);
 
@@ -35,37 +33,30 @@ class CustomCard extends StatelessWidget {
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    AppColors.neutralDarkDarkest.withOpacity(0.1),
-                    AppColors.neutralDarkDarkest.withOpacity(0.1),
+                    AppColors.neutralDarkDarkest.withOpacity(0.5),
+                    AppColors.neutralDarkDarkest.withOpacity(0.5),
                   ],
                 ),
               ),
             ),
           ),
-          Positioned(
-            bottom: 16,
-            left: 10,
-            right: 10,
-            child: Text(
-              subtitle,
-              style: AppTextStyles.headingH4.copyWith(
-                color: AppColors.neutralDarkDarkest,
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: Text(
+                title,
+                style: AppTextStyles.headingH4.copyWith(
+                  color: Colors.white,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0, 0),
+                      blurRadius: 6.0,
+                      color: Colors.black.withOpacity(0.7),
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.left,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          Positioned(
-            bottom: 36,
-            left: 10,
-            right: 10,
-            child: Text(
-              title,
-              style: AppTextStyles.bodyS.copyWith(
-                color: AppColors.neutralDarkDarkest,
-              ),
-              textAlign: TextAlign.left,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

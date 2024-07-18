@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:talktalk/ui/theme/color.dart';
 import 'package:talktalk/widgets/button/primary_button.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SurveyPhonePage_ extends StatefulWidget {
   @override
@@ -9,6 +11,39 @@ class SurveyPhonePage_ extends StatefulWidget {
 
 class _SurveyPhonePageState extends State<SurveyPhonePage_> {
   final TextEditingController _phoneController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final url = Uri.parse('http://localhost:8080/api/users/1');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        _phoneController.text = data['emergencyContact'] ?? '';
+      });
+    } else {
+      print('Failed to load user data.');
+    }
+  }
+
+  Future<void> _updateEmergencyContact() async {
+    final url = Uri.parse(
+      'http://localhost:8080/api/users/1?fieldName=emergencyContact&fieldValue=${_phoneController.text}',
+    );
+    final response = await http.patch(url);
+
+    if (response.statusCode == 200) {
+      print('Emergency contact updated successfully.');
+    } else {
+      print('Failed to update emergency contact.');
+    }
+  }
 
   @override
   void dispose() {
@@ -64,7 +99,9 @@ class _SurveyPhonePageState extends State<SurveyPhonePage_> {
             PrimaryButton(
               text: '수정',
               onPressed: () {
-                Navigator.pop(context);              },
+                _updateEmergencyContact();
+                Navigator.pop(context);
+              },
             ),
           ],
         ),

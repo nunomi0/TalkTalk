@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:talktalk/ui/theme/color.dart';
 import 'package:talktalk/widgets/button/primary_button.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SurveyMemoPage_ extends StatefulWidget {
   @override
@@ -9,6 +11,39 @@ class SurveyMemoPage_ extends StatefulWidget {
 
 class _SurveyMemoPageState extends State<SurveyMemoPage_> {
   final TextEditingController _memoController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final url = Uri.parse('http://localhost:8080/api/users/1');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        _memoController.text = data['additionalInfo'] ?? '';
+      });
+    } else {
+      print('Failed to load user data.');
+    }
+  }
+
+  Future<void> _updateAdditionalInfo() async {
+    final url = Uri.parse(
+      'http://localhost:8080/api/users/1?fieldName=additionalInfo&fieldValue=${_memoController.text}',
+    );
+    final response = await http.patch(url);
+
+    if (response.statusCode == 200) {
+      print('Additional info updated successfully.');
+    } else {
+      print('Failed to update additional info.');
+    }
+  }
 
   @override
   void dispose() {
@@ -64,7 +99,9 @@ class _SurveyMemoPageState extends State<SurveyMemoPage_> {
             PrimaryButton(
               text: '수정',
               onPressed: () {
-                Navigator.pop(context);              },
+                _updateAdditionalInfo();
+                Navigator.pop(context);
+              },
             ),
           ],
         ),

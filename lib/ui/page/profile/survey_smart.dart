@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:talktalk/ui/theme/color.dart';
 import 'package:talktalk/widgets/button/primary_button.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SurveySmartPage_ extends StatefulWidget {
   @override
@@ -9,6 +11,39 @@ class SurveySmartPage_ extends StatefulWidget {
 
 class _SurveySmartPageState extends State<SurveySmartPage_> {
   final TextEditingController _smartController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final url = Uri.parse('http://localhost:8080/api/users/1');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        _smartController.text = data['educationLevel'] ?? '';
+      });
+    } else {
+      print('Failed to load user data.');
+    }
+  }
+
+  Future<void> _updateEducationLevel() async {
+    final url = Uri.parse(
+      'http://localhost:8080/api/users/1?fieldName=educationLevel&fieldValue=${_smartController.text}',
+    );
+    final response = await http.patch(url);
+
+    if (response.statusCode == 200) {
+      print('Education level updated successfully.');
+    } else {
+      print('Failed to update education level.');
+    }
+  }
 
   @override
   void dispose() {
@@ -64,7 +99,9 @@ class _SurveySmartPageState extends State<SurveySmartPage_> {
             PrimaryButton(
               text: '수정',
               onPressed: () {
-                Navigator.pop(context);              },
+                _updateEducationLevel();
+                Navigator.pop(context);
+              },
             ),
           ],
         ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:talktalk/ui/theme/color.dart';
 import 'package:talktalk/widgets/button/primary_button.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SurveyBirthPage_ extends StatefulWidget {
   @override
@@ -9,6 +11,39 @@ class SurveyBirthPage_ extends StatefulWidget {
 
 class _SurveyBirthPageState extends State<SurveyBirthPage_> {
   final TextEditingController _birthController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final url = Uri.parse('http://localhost:8080/api/users/1');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        _birthController.text = data['birthdate'] ?? '';
+      });
+    } else {
+      print('Failed to load user data.');
+    }
+  }
+
+  Future<void> _updateBirthdate() async {
+    final url = Uri.parse(
+      'http://localhost:8080/api/users/1?fieldName=birthdate&fieldValue=${_birthController.text}',
+    );
+    final response = await http.patch(url);
+
+    if (response.statusCode == 200) {
+      print('Birthdate updated successfully.');
+    } else {
+      print('Failed to update birthdate.');
+    }
+  }
 
   @override
   void dispose() {
@@ -64,6 +99,7 @@ class _SurveyBirthPageState extends State<SurveyBirthPage_> {
             PrimaryButton(
               text: '수정',
               onPressed: () {
+                _updateBirthdate();
                 Navigator.pop(context);
               },
             ),
